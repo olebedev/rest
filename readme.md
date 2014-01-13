@@ -1,5 +1,5 @@
 ## REST 
-Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface over MongoDB, as middlware for [martini](https://github.com/codegangsta/martini) framework. Useful to create single page applications, based on RESTful style.
+Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface over MongoDB, as middlware for [martini](https://github.com/codegangsta/martini) framework. Useful to create single page applications, REST style based.
 
 #### Usage:
 
@@ -38,7 +38,7 @@ Allowed  collection `GET` parameters:
 - limit - `int`
 - skip - `int`
 - sort - `string`, [more detail](http://godoc.org/labix.org/v2/mgo#Query.Sort)
-- count - `int`
+- count - `any`
 - select - JSON mongodb [select](http://www.mongodb.org/display/DOCS/Retrieving+a+Subset+of+Fields) statement
 
 #### TODO
