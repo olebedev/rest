@@ -32,7 +32,7 @@ func main() {
 ```
 
 Now you can send HTTP requests to `http://localhost:3000/api/v1/rest/example_collection`.  
-Allowed  collection `GET` parameters:  
+Available `GET` parameters:  
 
 - query - JSON mongodb [query](http://www.mongodb.org/display/DOCS/Querying) statement
 - limit - `int`
