@@ -1,5 +1,5 @@
 ## REST 
-Simple interface under MongoDB, middlware for [martini](https://github.com/codegangsta/martini) framework.
+Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface under MongoDB, as middlware for [martini](https://github.com/codegangsta/martini) framework. Useful to create single page applications, based on RESTful style.
 
 #### Usage:
 
@@ -30,6 +30,16 @@ func main() {
   m.Run()
 }
 ```
+
+Now you can send HTTP requests to `http://localhost:3000/api/v1/rest/example_collection`.  
+Allowed  collection `GET` parameters:  
+
+- query - JSON mongodb [query](http://www.mongodb.org/display/DOCS/Querying) statement
+- limit - `int`
+- skip - `int`
+- sort - `string`, [more detail](http://godoc.org/labix.org/v2/mgo#Query.Sort)
+- count - `int`
+- select - JSON mongodb [select](http://www.mongodb.org/display/DOCS/Retrieving+a+Subset+of+Fields) statement
 
 #### TODO
 - tests
