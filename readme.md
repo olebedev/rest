@@ -1,5 +1,5 @@
 ## REST 
-Simple interface under MongoDB, middlware for [martini](https://github.com/codegangsta/martini).
+Simple interface under MongoDB, middlware for [martini](https://github.com/codegangsta/martini) framework.
 
 #### Usage:
 
