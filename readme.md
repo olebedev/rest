@@ -1,5 +1,5 @@
 ## REST 
-Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface under MongoDB, as middlware for [martini](https://github.com/codegangsta/martini) framework. Useful to create single page applications, based on RESTful style.
+Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface over MongoDB, as middlware for [martini](https://github.com/codegangsta/martini) framework. Useful to create single page applications, based on RESTful style.
 
 #### Usage:
 
