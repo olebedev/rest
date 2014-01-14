@@ -21,9 +21,9 @@ func main() {
 
   m := martini.Classic()
   
-  m.Use(rest.Serve(&rest.Config{
-    Prefix: "/api/v1",
-    Db:     db, 
+  m.Use(rest.Rest(&rest.Config{
+    Prefix:       "/api/v1",
+    Db:           db, 
     ResonseField: "data", // optional
   }))
 
@@ -38,10 +38,16 @@ Available `GET` parameters:
 - limit - `int`
 - skip - `int`
 - sort - `string`, [more detail](http://godoc.org/labix.org/v2/mgo#Query.Sort)
-- count - `any`
+- count - `bool`
 - select - JSON mongodb [select](http://www.mongodb.org/display/DOCS/Retrieving+a+Subset+of+Fields) statement
 
-#### TODO
+#### Examples:
+
+```curl
+
+```
+
+#### TODO:
 - tests
 - attach given middleware for rest handlers
 - autoincrement int logic as option
