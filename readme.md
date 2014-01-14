@@ -4,6 +4,8 @@ Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) inte
 #### Usage:
 
 ```go
+package main
+
 import (
   "github.com/codegangsta/martini"
   "labix.org/v2/mgo"
@@ -43,9 +45,43 @@ Available `GET` parameters:
 
 #### Examples:
 
-```curl
+Let's create something simple.
+```bash
+$ curl -X POST http://localhost:5000/api/v1/test -s \
+  -H "Accept: application/json" \
+  -H "Content-type: application/json" \
+  -d '{"hello":"world"}'
 
+{
+  "data": { // ResonseField name
+    "inserted": 1
+  }
+}
+$ // ... and so on
 ```
+
+To get full collection use this example:
+```bash
+$ curl http://localhost:5000/api/v1/test
+{
+  "data": [
+    {
+      "hello": "world",
+      "_id": "52d382ae367e0ee611626bf0"
+    },
+    {
+      "hello": "world 2",
+      "_id": "52d382b0367e0ee611626bf1"
+    },
+    {
+      "hello": "world 3",
+      "_id": "52d382b4367e0ee611626bf2"
+    }
+  ]
+}
+```
+
+Also available PUT & DELETE method.
 
 #### TODO:
 - tests
