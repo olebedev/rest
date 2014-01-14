@@ -22,7 +22,7 @@ func main() {
   m := martini.Classic()
   
   m.Use(rest.Serve(&rest.Config{
-    Prefix: "/api/v1/rest",
+    Prefix: "/api/v1",
     Db:     db, 
     ResonseField: "data", // optional
   }))
@@ -31,7 +31,7 @@ func main() {
 }
 ```
 
-Now you can send HTTP requests to `http://localhost:3000/api/v1/rest/example_collection`.  
+Now you can send HTTP requests to `http://localhost:3000/api/v1/example_collection`.  
 Available `GET` parameters:  
 
 - query - JSON mongodb [query](http://www.mongodb.org/display/DOCS/Querying) statement
