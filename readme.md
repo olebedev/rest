@@ -88,6 +88,3 @@ $ curl http://localhost:5000/api/v1/test
 ```
 
 Also available PUT & DELETE method.
-
-#### TODO:
-- autoincrement int logic as option
