@@ -23,7 +23,7 @@ func main() {
 
   m := martini.Classic()
   
-  m.Use(rest.Rest(&rest.Config{
+  m.Use(rest.Rest(rest.Config{
     Prefix:       "/api/v1",
     Db:           db, 
     ResonseField: "data", // optional
@@ -60,7 +60,7 @@ $ curl -X POST http://localhost:5000/api/v1/test -s \
 $ // ... and so on
 ```
 
-To get full collection use this example:
+To get full collection use this command:
 ```bash
 $ curl http://localhost:5000/api/v1/test
 {
@@ -84,6 +84,5 @@ $ curl http://localhost:5000/api/v1/test
 Also available PUT & DELETE method.
 
 #### TODO:
-- tests
 - attach given middleware for rest handlers
 - autoincrement int logic as option

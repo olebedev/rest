@@ -51,7 +51,7 @@ type Config struct {
 	ResonseField string
 }
 
-var conf *Config
+var conf Config
 
 // JSON maker. For flexible JSON data packing.
 func jsonResponse(err error, data interface{}) string {
@@ -184,14 +184,18 @@ func post(req *http.Request, params martini.Params) (int, string) {
 		return http.StatusBadRequest, jsonResponse(err, nil)
 	}
 
-	result := map[string]int{
-		"inserted": 1,
+	// m, _ := body.(map[string]interface{})
+
+	if _, exists := body["_id"]; !exists {
+		body["_id"] = bson.NewObjectId()
 	}
+
 	err = c.Insert(body)
+
 	if err != nil {
 		return http.StatusBadRequest, jsonResponse(err, nil)
 	}
-	return http.StatusCreated, jsonResponse(err, result)
+	return http.StatusCreated, jsonResponse(err, body)
 }
 
 // PUT method martini.Handler. To replace item by _id.
@@ -252,22 +256,17 @@ func del(req *http.Request, params martini.Params) (int, string) {
 	return http.StatusOK, jsonResponse(err, response)
 }
 
-func Rest(c *Config) martini.Handler {
-	if c == nil {
-		panic("rest: please specify a config!")
-	}
-
+func Rest(c Config, h ...martini.Handler) martini.Handler {
 	conf = c
 	r := martini.NewRouter()
 	// remove NotFound from bundle
 	r.NotFound(make([]martini.Handler, 0)...)
 
-	// TODO: put given middleware
-	r.Get(c.Prefix+"/:coll", get)
-	r.Get(c.Prefix+"/:coll/:_id", getId)
-	r.Post(c.Prefix+"/:coll", post)
-	r.Put(c.Prefix+"/:coll/:_id", put)
-	r.Delete(c.Prefix+"/:coll/:_id", del)
+	r.Get(c.Prefix+"/:coll", append(h, get)...)
+	r.Get(c.Prefix+"/:coll/:_id", append(h, getId)...)
+	r.Post(c.Prefix+"/:coll", append(h, post)...)
+	r.Put(c.Prefix+"/:coll/:_id", append(h, put)...)
+	r.Delete(c.Prefix+"/:coll/:_id", append(h, del)...)
 
 	return r.Handle
 }
