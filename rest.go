@@ -49,6 +49,8 @@ type Config struct {
 	Db *mgo.Database
 	// Optional response field name. It is necessary to obtain the expected response.
 	ResonseField string
+	// Use integer autoincrement for _id instead of mongodb auto generated hash
+	Autoincrement bool
 }
 
 var conf Config
@@ -96,6 +98,26 @@ func parseId(s string) (_id interface{}, ok bool) {
 		_id = bson.ObjectIdHex(s)
 	}
 	return
+}
+
+func incrementFor(coll string) int {
+	c := conf.Db.C("ids")
+	change := mgo.Change{
+		Update:    bson.M{"$inc": bson.M{"n": 1}},
+		ReturnNew: true,
+	}
+
+	var doc struct {
+		N int
+	}
+
+	// check
+	count, _ := c.Find(bson.M{"_id": coll}).Count()
+	if count == 0 {
+		c.Insert(bson.M{"_id": coll, "n": 0})
+	}
+	c.Find(bson.M{"_id": coll}).Apply(change, &doc)
+	return doc.N
 }
 
 // GET method martini.Handler. For collections. With optional GET parameters.
@@ -187,7 +209,11 @@ func post(req *http.Request, params martini.Params) (int, string) {
 	// m, _ := body.(map[string]interface{})
 
 	if _, exists := body["_id"]; !exists {
-		body["_id"] = bson.NewObjectId()
+		if conf.Autoincrement {
+			body["_id"] = incrementFor(params["coll"])
+		} else {
+			body["_id"] = bson.NewObjectId()
+		}
 	}
 
 	err = c.Insert(body)

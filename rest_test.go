@@ -53,7 +53,7 @@ func TestConfigResonseField(t *testing.T) {
 func TestInvalidPost(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/test_create", bytes.NewBufferString("string"))
@@ -68,7 +68,7 @@ func TestInvalidPost(t *testing.T) {
 func TestPost(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/test_create", bytes.NewBufferString(`{"foo":"bar"}`))
@@ -102,7 +102,7 @@ func TestPost(t *testing.T) {
 func TestPostIntId(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/test_create", bytes.NewBufferString(`{"_id":1,"foo":"bar"}`))
@@ -118,7 +118,7 @@ func TestCollection(t *testing.T) {
 	defer dropDb()
 	generateData(3, "test_collection")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_collection", nil)
@@ -134,7 +134,7 @@ func TestQuery(t *testing.T) {
 	defer dropDb()
 	generateData(3, "test_query")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", `/api/v1/test_query?query={"foo":"bar-2"}`, nil)
@@ -150,7 +150,7 @@ func TestLimitSkipSortSelect(t *testing.T) {
 	defer dropDb()
 	generateData(20, "test_limit_skip_sort_select")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", `/api/v1/test_limit_skip_sort_select?sort=_id&limit=3&skip=3&select={"_id":0}`, nil)
@@ -166,7 +166,7 @@ func TestCount(t *testing.T) {
 	defer dropDb()
 	generateData(3, "test_count")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_count?count=1", nil)
@@ -182,7 +182,7 @@ func TestNotFound(t *testing.T) {
 	defer dropDb()
 	generateData(3, "test_not_found")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_not_found/4", nil)
@@ -198,7 +198,7 @@ func TestInvalidPut(t *testing.T) {
 	defer dropDb()
 	generateData(1, "test_i_put")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_i_put/1", nil)
@@ -223,7 +223,7 @@ func TestPut(t *testing.T) {
 	defer dropDb()
 	generateData(1, "test_put")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_put/1", nil)
@@ -256,7 +256,7 @@ func TestDelete(t *testing.T) {
 	defer dropDb()
 	generateData(1, "test_delete")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("DELETE", "/api/v1/test_delete/1", nil)
@@ -280,7 +280,7 @@ func TestDelete(t *testing.T) {
 func TestApplyHandler(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}, func() (int, string) {
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}, func() (int, string) {
 		return http.StatusForbidden, "test forbidden"
 	}))
 
@@ -293,6 +293,20 @@ func TestApplyHandler(t *testing.T) {
 	expect(t, res.Body.String(), `test forbidden`)
 }
 
+// 15
+func TestAutoIncrement(t *testing.T) {
+	defer dropDb()
+	m := martini.Classic()
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", true}))
+
+	res := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/v1/test_autoinc", bytes.NewBufferString(`{"foo":"bar"}`))
+	m.ServeHTTP(res, req)
+
+	expect(t, res.Code, http.StatusCreated)
+	expect(t, res.Body.String(), `{"data":{"_id":1,"foo":"bar"}}`)
+}
+
 // helpers
 var db *mgo.Database
 var wg sync.WaitGroup
@@ -300,7 +314,7 @@ var once sync.Once
 
 func generateData(n int, name string) {
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data"}))
+	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
 
 	for i := range make([]int, n) {
 		res := httptest.NewRecorder()
@@ -323,7 +337,7 @@ func dropDb() {
 
 func getDb() *mgo.Database {
 	if db == nil {
-		wg.Add(14) // test cases counter
+		wg.Add(15) // test cases counter
 		session, _ := mgo.Dial("localhost")
 		db = session.DB("_rest_test")
 		db.DropDatabase()

@@ -31,6 +31,8 @@ func main() {
     Prefix:       "/api/v1",
     Db:           db, 
     ResonseField: "data", // optional
+    // Use integer autoincrement for _id instead of mongodb auto generated hash, default false. optional
+    Autoincrement: false, 
   }, access))
 
   m.Run()
