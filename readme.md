@@ -12,6 +12,10 @@ import (
   "github.com/olebedev/rest"
 )
 
+func access(res http.ResponseWriter, req *http.Request){
+  // Your data access logic here
+}
+
 func main() {
   session, err := mgo.Dial("localhost")
   if err != nil {
@@ -27,7 +31,7 @@ func main() {
     Prefix:       "/api/v1",
     Db:           db, 
     ResonseField: "data", // optional
-  }))
+  }, access))
 
   m.Run()
 }
@@ -84,5 +88,4 @@ $ curl http://localhost:5000/api/v1/test
 Also available PUT & DELETE method.
 
 #### TODO:
-- attach given middleware for rest handlers
 - autoincrement int logic as option
