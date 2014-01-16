@@ -60,7 +60,8 @@ $ curl -X POST http://localhost:5000/api/v1/test -s \
 
 {
   "data": { // ResonseField name
-    "inserted": 1
+    "_id":"52d382ae367e0ee611626bf1"
+    "hello":"world"
   }
 }
 $ // ... and so on
