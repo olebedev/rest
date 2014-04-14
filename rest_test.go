@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/codegangsta/martini"
+	"github.com/go-martini/martini"
 	"labix.org/v2/mgo"
 	"net/http"
 	"net/http/httptest"
@@ -17,28 +17,21 @@ import (
 func TestConfig(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{
-		Db:     getDb(),
-		Prefix: "/api/v1",
-	}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_config", nil)
 
 	m.ServeHTTP(res, req)
 	expect(t, res.Code, http.StatusOK)
-	expect(t, res.Body.String(), `[]`)
+	expect(t, res.Body.String(), `{"data":[]}`)
 }
 
 // 2
 func TestConfigResonseField(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{
-		Db:           getDb(),
-		Prefix:       "/api/v1",
-		ResonseField: "data",
-	}))
+	m.Group("/api/v1", Rest(Config{getDb(), "test", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_config", nil)
@@ -46,14 +39,14 @@ func TestConfigResonseField(t *testing.T) {
 	m.ServeHTTP(res, req)
 
 	expect(t, res.Code, http.StatusOK)
-	expect(t, res.Body.String(), `{"data":[]}`)
+	expect(t, res.Body.String(), `{"test":[]}`)
 }
 
 // 3
 func TestInvalidPost(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/test_create", bytes.NewBufferString("string"))
@@ -68,7 +61,7 @@ func TestInvalidPost(t *testing.T) {
 func TestPost(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/test_create", bytes.NewBufferString(`{"foo":"bar"}`))
@@ -102,7 +95,7 @@ func TestPost(t *testing.T) {
 func TestPostIntId(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/test_create", bytes.NewBufferString(`{"_id":1,"foo":"bar"}`))
@@ -118,7 +111,7 @@ func TestCollection(t *testing.T) {
 	defer dropDb()
 	generateData(3, "test_collection")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_collection", nil)
@@ -134,7 +127,7 @@ func TestQuery(t *testing.T) {
 	defer dropDb()
 	generateData(3, "test_query")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", `/api/v1/test_query?query={"foo":"bar-2"}`, nil)
@@ -150,7 +143,7 @@ func TestLimitSkipSortSelect(t *testing.T) {
 	defer dropDb()
 	generateData(20, "test_limit_skip_sort_select")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", `/api/v1/test_limit_skip_sort_select?sort=_id&limit=3&skip=3&select={"_id":0}`, nil)
@@ -166,7 +159,7 @@ func TestCount(t *testing.T) {
 	defer dropDb()
 	generateData(3, "test_count")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_count?count=1", nil)
@@ -182,7 +175,7 @@ func TestNotFound(t *testing.T) {
 	defer dropDb()
 	generateData(3, "test_not_found")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_not_found/4", nil)
@@ -198,7 +191,7 @@ func TestInvalidPut(t *testing.T) {
 	defer dropDb()
 	generateData(1, "test_i_put")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_i_put/1", nil)
@@ -223,7 +216,7 @@ func TestPut(t *testing.T) {
 	defer dropDb()
 	generateData(1, "test_put")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_put/1", nil)
@@ -256,7 +249,7 @@ func TestDelete(t *testing.T) {
 	defer dropDb()
 	generateData(1, "test_delete")
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("DELETE", "/api/v1/test_delete/1", nil)
@@ -280,9 +273,9 @@ func TestDelete(t *testing.T) {
 func TestApplyHandler(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}, func() (int, string) {
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}), func() (int, string) {
 		return http.StatusForbidden, "test forbidden"
-	}))
+	})
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/v1/test_apply", nil)
@@ -297,7 +290,7 @@ func TestApplyHandler(t *testing.T) {
 func TestAutoIncrement(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", true}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", true}))
 
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/test_autoinc", bytes.NewBufferString(`{"foo":"bar"}`))
@@ -314,7 +307,7 @@ var once sync.Once
 
 func generateData(n int, name string) {
 	m := martini.Classic()
-	m.Use(Rest(Config{"/api/v1", getDb(), "data", false}))
+	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	for i := range make([]int, n) {
 		res := httptest.NewRecorder()
@@ -350,3 +343,5 @@ func expect(t *testing.T, a interface{}, b interface{}) {
 		t.Errorf("Expected %v (type %v) - Got %v (type %v)", b, reflect.TypeOf(b), a, reflect.TypeOf(a))
 	}
 }
+
+// API prefix for routing it right.

@@ -1,39 +1,40 @@
 // Package rest is a simple REST interface over MongoDB, as middlware for martini framework
 //
-//	 package main
+// package main
 //
-//	 import (
-//	   "github.com/codegangsta/martini"
-//	   "labix.org/v2/mgo"
-//	   "github.com/olebedev/rest"
-//	 )
+// import (
+//   "github.com/go-martini/martini"
+//   "labix.org/v2/mgo"
+//   "github.com/olebedev/rest"
+// )
 //
-//	 func main() {
-//	   session, err := mgo.Dial("localhost")
-//	   if err != nil {
-//	     panic(err)
-//	   }
-//	   defer session.Close()
-//	   session.SetMode(mgo.Monotonic, true)
-//	   db := session.DB("test")
+// func main() {
+//   session, err := mgo.Dial("localhost")
+//   if err != nil {
+//     panic(err)
+//   }
+//   defer session.Close()
+//   session.SetMode(mgo.Monotonic, true)
+//   db := session.DB("test")
 //
-//	   m := martini.Classic()
+//   m := martini.Classic()
 //
-//	   m.Use(rest.Serve(&rest.Config{
-//	     Prefix:       "/api/v1",
-//	     Db:           db,
-//	     ResonseField: "data", // optional
-//	   }))
+//   m.Group("/api/v1", rest.Rest(rest.Config{
+//     Db            : db,
+//     ResonseField  : "data", // optional
+//     Autoincrement : true,   // optional
+//   }))
 //
-//	   m.Run()
-//	 }
+//   m.Run()
+// }
+
 package rest
 
 import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"github.com/codegangsta/martini"
+	"github.com/go-martini/martini"
 	"io/ioutil"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
@@ -43,8 +44,6 @@ import (
 
 // Config is a struct for specifying configuration options for the rest.Rest middleware.
 type Config struct {
-	// API prefix for routing it right.
-	Prefix string
 	// Mongo instance pointer.
 	Db *mgo.Database
 	// Optional response field name. It is necessary to obtain the expected response.
@@ -282,17 +281,13 @@ func del(req *http.Request, params martini.Params) (int, string) {
 	return http.StatusOK, jsonResponse(err, response)
 }
 
-func Rest(c Config, h ...martini.Handler) martini.Handler {
+func Rest(c Config) func(r martini.Router) {
 	conf = c
-	r := martini.NewRouter()
-	// remove NotFound from bundle
-	r.NotFound(make([]martini.Handler, 0)...)
-
-	r.Get(c.Prefix+"/:coll", append(h, get)...)
-	r.Get(c.Prefix+"/:coll/:_id", append(h, getId)...)
-	r.Post(c.Prefix+"/:coll", append(h, post)...)
-	r.Put(c.Prefix+"/:coll/:_id", append(h, put)...)
-	r.Delete(c.Prefix+"/:coll/:_id", append(h, del)...)
-
-	return r.Handle
+	return func(r martini.Router) {
+		r.Get("/:coll", get)
+		r.Get("/:coll/:_id", getId)
+		r.Post("/:coll", post)
+		r.Put("/:coll/:_id", put)
+		r.Delete("/:coll/:_id", del)
+	}
 }

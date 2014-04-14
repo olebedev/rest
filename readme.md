@@ -1,5 +1,5 @@
 ## REST 
-Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface over MongoDB, as middlware for [martini](https://github.com/codegangsta/martini) framework. Useful to create single page applications, REST style based.
+Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface over MongoDB, as middlware for [martini](https://github.com/g-martini/martini) framework. Useful to create single page applications, REST style based.
 
 #### Usage:
 
@@ -7,7 +7,7 @@ Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) inte
 package main
 
 import (
-  "github.com/codegangsta/martini"
+  "github.com/go-martini/martini"
   "labix.org/v2/mgo"
   "github.com/olebedev/rest"
 )
@@ -27,12 +27,11 @@ func main() {
 
   m := martini.Classic()
   
-  m.Use(rest.Rest(rest.Config{
-    Prefix:       "/api/v1",
+  m.Group("/api/v1", rest.Rest(rest.Config{
     Db:           db, 
     ResonseField: "data", // optional
     // Use integer autoincrement for _id instead of mongodb auto generated hash, default false. optional
-    Autoincrement: false, 
+    // Autoincrement: true, 
   }, access))
 
   m.Run()
@@ -88,4 +87,4 @@ $ curl http://localhost:5000/api/v1/test
 }
 ```
 
-Also available PUT & DELETE method.
+Also available PUT(by id) & DELETE(by id) methods.
