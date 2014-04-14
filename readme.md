@@ -2,7 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/olebedev/rest?status.png)](https://godoc.org/github.com/olebedev/rest)
 
-Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface over MongoDB, as middlware for [martini](https://github.com/g-martini/martini) framework. Useful to create single page applications, REST style based.
+Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface over MongoDB, as middlware for [martini](https://github.com/go-martini/martini) framework. Useful to create single page applications, REST style based.
 
 #### Usage:
 
