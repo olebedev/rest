@@ -8,6 +8,7 @@ import (
 	"labix.org/v2/mgo"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"sync"
 	"testing"
@@ -331,7 +332,13 @@ func dropDb() {
 func getDb() *mgo.Database {
 	if db == nil {
 		wg.Add(15) // test cases counter
-		session, _ := mgo.Dial("localhost")
+		var mongoUri string
+		if os.Getenv("WERCKER_MONGODB_HOST") > 0 {
+			mongoUri = os.Getenv("WERCKER_MONGODB_HOST") + os.Getenv("WERCKER_MONGODB_PORT")
+		} else {
+			mongoUri = "localhost"
+		}
+		session, _ := mgo.Dial(mongoUri)
 		db = session.DB("_rest_test")
 		db.DropDatabase()
 	}
