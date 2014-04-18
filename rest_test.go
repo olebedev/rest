@@ -333,7 +333,7 @@ func getDb() *mgo.Database {
 	if db == nil {
 		wg.Add(15) // test cases counter
 		var mongoUri string
-		if os.Getenv("WERCKER_MONGODB_HOST") > 0 {
+		if len(os.Getenv("WERCKER_MONGODB_HOST")) > 0 {
 			mongoUri = os.Getenv("WERCKER_MONGODB_HOST") + os.Getenv("WERCKER_MONGODB_PORT")
 		} else {
 			mongoUri = "localhost"
