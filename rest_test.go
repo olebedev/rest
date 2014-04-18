@@ -18,6 +18,14 @@ import (
 func TestConfig(t *testing.T) {
 	defer dropDb()
 	m := martini.Classic()
+
+	// check that db is ok
+	db = getDb()
+	if db == nil {
+		// fail
+		t.Error("Falied to initialize MongoDB.")
+	}
+
 	m.Group("/api/v1", Rest(Config{getDb(), "data", false}))
 
 	res := httptest.NewRecorder()
@@ -324,7 +332,7 @@ func dropDb() {
 	go func() {
 		once.Do(func() {
 			wg.Wait()
-			db.DropDatabase()
+			// db.DropDatabase()
 		})
 	}()
 }
@@ -341,8 +349,8 @@ func getDb() *mgo.Database {
 		session, err := mgo.Dial(mongoUri)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(1)
 		}
+
 		db = session.DB("_rest_test")
 		db.DropDatabase()
 	}
