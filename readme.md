@@ -1,6 +1,6 @@
 ## REST 
 
-[![GoDoc](https://godoc.org/github.com/olebedev/rest?status.png)](https://godoc.org/github.com/olebedev/rest)
+[![wercker status](https://app.wercker.com/status/2cc7a63877f6403e5367142f950b2145/s/ "wercker status")](https://app.wercker.com/project/bykey/2cc7a63877f6403e5367142f950b2145) [![GoDoc](https://godoc.org/github.com/olebedev/rest?status.png)](https://godoc.org/github.com/olebedev/rest)
 
 Simple [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) interface over MongoDB, as middlware for [martini](https://github.com/go-martini/martini) framework. Useful to create single page applications, REST style based.
 
