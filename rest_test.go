@@ -334,11 +334,15 @@ func getDb() *mgo.Database {
 		wg.Add(15) // test cases counter
 		var mongoUri string
 		if len(os.Getenv("WERCKER_MONGODB_HOST")) > 0 {
-			mongoUri = os.Getenv("WERCKER_MONGODB_HOST") + os.Getenv("WERCKER_MONGODB_PORT")
+			mongoUri = os.Getenv("WERCKER_MONGODB_HOST") + ":" + os.Getenv("WERCKER_MONGODB_PORT")
 		} else {
 			mongoUri = "localhost"
 		}
-		session, _ := mgo.Dial(mongoUri)
+		session, err := mgo.Dial(mongoUri)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 		db = session.DB("_rest_test")
 		db.DropDatabase()
 	}
